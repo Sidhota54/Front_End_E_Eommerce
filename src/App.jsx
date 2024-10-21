@@ -28,7 +28,6 @@ function App() {
     (state) => state.auth
   );
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(checkAuth());
   }, [dispatch]);
