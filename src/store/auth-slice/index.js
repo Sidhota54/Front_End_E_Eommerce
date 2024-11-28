@@ -23,6 +23,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+
 export const verifyOTP = createAsyncThunk(
   "/auth/verifyotp",
 

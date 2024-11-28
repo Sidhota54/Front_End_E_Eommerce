@@ -1,7 +1,9 @@
 import CommonForm from "@/components/common/form";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { registerFormControls } from "@/config";
-import { registerUser, verifyOTP } from "@/store/auth-slice";
+// import {  verifyOTP } from "@/store/auth-slice";
+import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -13,90 +15,111 @@ const initialState = {
 };
 
 function AuthRegister() {
+  const [loading,setLoading] = useState(false)
   const [formData, setFormData] = useState(initialState);
-  const [otpModal, setotpModal] = useState(false);
+  const [otpModal, setOtpModal] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  function onSubmit(event) {
+  const onSubmit = (event) => {
     event.preventDefault();
-    dispatch(registerUser(formData)).then((data) => {
-      if (data?.payload?.success) {
-        console.log(otpModal)
-        setotpModal(!otpModal)
-        console.log(otpModal)
-        // toast({
-        //   title: data?.payload?.message,
-        // });
+    registerUser(formData).then((data) => {
+      if (data?.success) {
+        setOtpModal(true);
+        toast({
+          title: data?.message,
+        });
         // navigate("/auth/login");
       } else {
+
         toast({
-          title: data?.payload?.message,
+          title: data?.message,
           variant: "destructive",
         });
       }
     });
-  }
-  const verifyOPTCreateUser =async(otpValue) =>{
-    dispatch(verifyOTP({email: formData?.email,otp:otpValue})).then((data) => {
-      if (data?.payload?.success) {
-        setotpModal(!otpModal)
+  };
+  const registerUser = async (formData) => {
+    setLoading(true)
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/auth/register`,
+      formData
+    );
+    setLoading(false)
+    return response.data;
+  };
+  const verifyOPTCreateUser = async (otpValue) => {
+    verifyOTP({ email: formData?.email, otp: otpValue }).then((data) => {
+      if (data?.success) {
+        setOtpModal(!otpModal);
         toast({
-          title: data?.payload?.message,
+          title: data?.message,
         });
         navigate("/auth/login");
       } else {
         toast({
-          title: data?.payload?.message,
+          title: data?.message,
           variant: "destructive",
         });
       }
     });
-  }
-
-  console.log(formData);
-
+  };
+  const verifyOTP = async (formData) => {
+    setLoading(true)
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/auth/verifyotp`,
+      formData
+    );
+    setLoading(false)
+    return response.data;
+  };
+  if(loading) return <Skeleton className="fixed inset-0  flex items-center h-[100vh] bg-black  " />
   return (
-    <div className="mx-auto w-full max-w-md space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Create new account
-        </h1>
-        <p className="mt-2">
-          Already have an account
-          <Link
-            className="font-medium ml-2 text-primary hover:underline"
-            to="/auth/login"
-          >
-            Login
-          </Link>
-        </p>
-      </div>
-      <CommonForm
-        formControls={registerFormControls}
-        buttonText={"Sign Up"}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={onSubmit}
-      />
-      {/* <button
+    <>
+   
+      <div className="mx-auto w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Create new account
+          </h1>
+          <p className="mt-2">
+            Already have an account
+            <Link
+              className="font-semibold ml-2 text-primary hover:underline"
+              to="/auth/login"
+            >
+              Login
+            </Link>
+          </p>
+        </div>
+        <CommonForm
+          formControls={registerFormControls}
+          buttonText={"Sign Up"}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={onSubmit}
+        />
+        {/* <button
           className="text-gray-500 px-4 py-2 text-lg rounded-md mt-2 absolute top-0 right-0"
-          onClick={()=>setotpModal(!otpModal)}
+          onClick={()=>setOtpModal(!otpModal)}
         >
           X
         </button> */}
-      <OtpModal isOpen={otpModal} onClose={()=>setotpModal(false)} onSubmit={verifyOPTCreateUser} />
-    </div>
+      </div>
+      <OtpModal
+        isOpen={otpModal}
+        onClose={() => setOtpModal(false)}
+        onSubmit={verifyOPTCreateUser}
+      />
+    </>
   );
 }
 
 export default AuthRegister;
 
-
-
 function OtpModal({ isOpen, onClose, onSubmit }) {
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(["", "", "", ""]);
 
   const handleInputChange = (index, value) => {
     const newOtp = [...otp];
@@ -113,22 +136,25 @@ function OtpModal({ isOpen, onClose, onSubmit }) {
   };
 
   const handleSubmit = () => {
-    const otpValue = otp.join('');
+    const otpValue = otp.join("");
     onSubmit(otpValue);
   };
 
   return (
-    <div className={`fixed inset-0 flex items-center bg-[rgb(23,45,24,0.5)] justify-center ${isOpen ? 'block' : 'hidden'}`}>
-    
+    <div
+      className={`fixed inset-0  flex items-center h-[100vh] bg-[rgb(23,45,24,0.5)] justify-center ${
+        isOpen ? "block" : "hidden"
+      }`}
+    >
       <div className="bg-white p-8 rounded-md shadow-md relative">
-      <button
+        <button
           className="text-gray-500 px-4 py-2 text-lg rounded-md mt-2 absolute top-0 right-0"
           onClick={onClose}
         >
           X
         </button>
         <h2 className="text-2xl font-bold mb-4">Enter OTP</h2>
-        
+
         <div className="flex">
           {otp.map((digit, index) => (
             <input
@@ -148,10 +174,7 @@ function OtpModal({ isOpen, onClose, onSubmit }) {
         >
           Verify
         </button>
-        
       </div>
     </div>
   );
 }
-
-
