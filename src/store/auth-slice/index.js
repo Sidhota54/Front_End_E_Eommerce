@@ -80,6 +80,9 @@ export const checkAuth = createAsyncThunk(
       `${import.meta.env.VITE_API_URL}/api/auth/check-auth`,
       {
         token: localStorage.getItem('token')
+      },
+      {
+        withCredentials: true,
       }
       // {
       //   withCredentials: true,

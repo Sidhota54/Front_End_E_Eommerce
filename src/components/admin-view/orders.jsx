@@ -19,6 +19,7 @@ import {
 } from "@/store/admin/order-slice";
 import { Badge } from "../ui/badge";
 
+
 function AdminOrdersView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
@@ -63,16 +64,22 @@ function AdminOrdersView() {
                     <TableCell>{orderItem?._id}</TableCell>
                     <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
                     <TableCell>
-                      <Badge
-                        className={`py-1 px-3 ${
-                          orderItem?.orderStatus === "confirmed"
-                            ? "bg-green-500"
-                            : orderItem?.orderStatus === "rejected"
-                            ? "bg-red-600"
-                            : "bg-black"
-                        }`}
-                      >
-                        {orderItem?.orderStatus}
+                    <Badge
+                className={`py-1 px-2 ${
+                  orderItem?.orderStatus === "pending"
+                    ? "bg-[#FFA500]" // Orange
+                    : orderItem?.orderStatus === "inProcess"
+                    ? "bg-[#007BFF]" // Blue
+                    : orderItem?.orderStatus === "inShipping"
+                    ? "bg-[#17A2B8]" // Teal
+                    : orderItem?.orderStatus === "delivered"
+                    ? "bg-[#28A745]" // Green
+                    : orderItem?.orderStatus === "rejected"
+                    ? "bg-[#DC3545]" // Red
+                    : "bg-black" // Default fallback
+                }`}
+              >
+                        {orderItem?.orderStatus.toUpperCase()}
                       </Badge>
                     </TableCell>
                     <TableCell>${orderItem?.totalAmount}</TableCell>

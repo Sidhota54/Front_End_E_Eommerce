@@ -17,10 +17,11 @@ function CommonForm({
   onSubmit,
   buttonText,
   isBtnDisabled,
+  inputValue
 }) {
   function renderInputsByComponentType(getControlItem) {
     let element = null;
-    const value = formData[getControlItem.name] || "";
+    const value = formData[getControlItem.name] || inputValue;
 
     switch (getControlItem.componentType) {
       case "input":

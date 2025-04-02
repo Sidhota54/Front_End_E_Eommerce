@@ -136,6 +136,7 @@ function AdminProducts() {
               {currentEditedId !== null ? "Edit Product" : "Add New Product"}
             </SheetTitle>
           </SheetHeader>
+          {currentEditedId !== null && <img src="" /> }
           <ProductImageUpload
             imageFile={imageFile}
             setImageFile={setImageFile}

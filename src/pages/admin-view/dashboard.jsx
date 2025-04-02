@@ -52,7 +52,7 @@ function AdminDashboard() {
       <Button onClick={handleUploadFeatureImage} className="mt-5 w-full">
         Upload
       </Button>
-      <div className="grid grid-cols-3  gap-4 mt-5">
+      <div className="grid 2xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 mt-5">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((featureImgItem,index) => (
               <div key={index} className="relative border-[1px] border-black hover:border-blue-700 rounded-md overflow-hidden">
